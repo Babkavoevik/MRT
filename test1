@@ -1,0 +1,55 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+
+const diagnoses = [
+  { code: "Q60.0", name: "Аплазия почки", research: "КТ почек" },
+  { code: "Q62.1", name: "Аномалии мочеточника", research: "МРТ мочеточников" },
+  { code: "Q62.5", name: "Гипоплазия мочевого пузыря", research: "КТ мочевого пузыря" },
+];
+
+const specialists = ["Уролог", "Терапевт", "Врач общей практики"];
+
+export default function KT_MRT_Criteria() {
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState(diagnoses[0]?.code || "");
+  const [selectedSpecialist, setSelectedSpecialist] = useState(specialists[0] || "");
+  const [result, setResult] = useState(diagnoses[0] || null);
+
+  const handleSearch = () => {
+    const criteria = diagnoses.find((d) => d.code === selectedDiagnosis);
+    setResult(criteria || null);
+  };
+
+  return (
+    <div className="p-4 space-y-4">
+      <h1 className="text-xl font-bold">Критерии назначения КТ/МРТ</h1>
+      
+      <Select value={selectedDiagnosis} onValueChange={setSelectedDiagnosis}>
+        {diagnoses.map((d) => (
+          <SelectItem key={d.code} value={d.code}>{`${d.code} - ${d.name}`}</SelectItem>
+        ))}
+      </Select>
+      
+      <Select value={selectedSpecialist} onValueChange={setSelectedSpecialist}>
+        {specialists.map((s) => (
+          <SelectItem key={s} value={s}>{s}</SelectItem>
+        ))}
+      </Select>
+      
+      <Button onClick={handleSearch} disabled={!selectedDiagnosis || !selectedSpecialist}>
+        Показать рекомендации
+      </Button>
+      
+      {result && (
+        <Card>
+          <CardContent className="p-4">
+            <h2 className="font-semibold">Рекомендация</h2>
+            <p><strong>Диагноз:</strong> {result.name} ({result.code})</p>
+            <p><strong>Рекомендуемое исследование:</strong> {result.research}</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
